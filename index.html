@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BY ADITYAA RAHMAN</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: #ffffff;
+    font-family: Arial, sans-serif;
+    color: #000000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.container {
+    width: 90%;
+    max-width: 350px;
+}
+
+/* KOTAK MP3 BESAR */
+.mp3-box {
+    width: 100%;
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 18px;
+    color: #000000;
+    text-align: center;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px #00000010;
+}
+
+.mp3-box:active {
+    background: #f2f2f2;
+}
+
+#fileInput {
+    display: none;
+}
+
+/* PEMUTAR AUDIO */
+#playerArea {
+    display: none;
+    margin-top: 0;
+    padding: 15px;
+    border: 1px solid #dddddd;
+    border-radius: 18px;
+    background: #ffffff;
+    animation: muncul 0.3s ease;
+}
+
+#songName {
+    font-size: 14px;
+    margin-bottom: 18px;
+    overflow-wrap: anywhere;
+}
+
+audio {
+    display: block;
+    width: 100%;
+    height: 55px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 15px 10px;
+    width: 100%;
+    background: #ffffff;
+    color: #000000;
+    border: 1px solid #cccccc;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+button:active {
+    background: #eeeeee;
+}
+
+@keyframes muncul {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- KOTAK MP3 -->
+    <div class="mp3-box" id="mp3Box">
+        MP3
+    </div>
+
+    <!-- PILIH FILE -->
+    <input
+        type="file"
+        id="fileInput"
+        accept="audio/*,.mp3"
+    >
+
+    <!-- PEMUTAR AUDIO -->
+    <div id="playerArea">
+
+        <div id="songName"></div>
+
+        <audio id="audioPlayer" controls></audio>
+
+        <button id="changeButton">
+            Pilih MP3 Lain
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+const mp3Box = document.getElementById("mp3Box");
+const fileInput = document.getElementById("fileInput");
+const playerArea = document.getElementById("playerArea");
+const audioPlayer = document.getElementById("audioPlayer");
+const songName = document.getElementById("songName");
+const changeButton = document.getElementById("changeButton");
+
+let currentAudioURL = null;
+
+// Klik kotak MP3 untuk memilih lagu
+mp3Box.addEventListener("click", function() {
+    fileInput.click();
+});
+
+// Memilih dan memutar lagu
+fileInput.addEventListener("change", function() {
+    const file = this.files[0];
+
+    if (!file) return;
+
+    // Hentikan audio sebelumnya
+    audioPlayer.pause();
+
+    // Hapus URL audio sebelumnya
+    if (currentAudioURL) {
+        URL.revokeObjectURL(currentAudioURL);
+    }
+
+    // Buat URL audio baru
+    currentAudioURL = URL.createObjectURL(file);
+
+    audioPlayer.src = currentAudioURL;
+    songName.textContent = file.name;
+
+    // Hilangkan kotak MP3 besar
+    mp3Box.style.display = "none";
+
+    // Tampilkan pemutar audio
+    playerArea.style.display = "block";
+
+    audioPlayer.load();
+
+    // Coba putar otomatis
+    audioPlayer.play().catch(function() {
+        // Jika autoplay diblokir, tekan tombol play
+    });
+});
+
+// Pilih lagu lain
+changeButton.addEventListener("click", function() {
+    fileInput.click();
+});
+
+// Bersihkan audio saat halaman ditutup
+window.addEventListener("pagehide", function() {
+    audioPlayer.pause();
+
+    if (currentAudioURL) {
+        URL.revokeObjectURL(currentAudioURL);
+        currentAudioURL = null;
+    }
+});
+</script>
+
+</body>
+  </html>
